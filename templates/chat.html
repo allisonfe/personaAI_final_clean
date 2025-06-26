@@ -161,24 +161,26 @@
       }
     }
 
-    function speakText(txt) {
+   function speakPortugueseMale(text, onstart = null, onend = null) {
       if (muted || !speakEnabled || !('speechSynthesis' in window)) return;
 
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(txt);
-      u.lang = 'en-US';
+      utterance.lang = "pt-BR";
 
       // Optional: choose male voice
       const voices = window.speechSynthesis.getVoices();
       const maleVoice = voices.find(v =>
-        v.lang.startsWith('en') && /male|Matthew|David|Brian|John/i.test(v.name)
-      );
+        v.lang.startsWith("pt") &&
+    (v.name.includes("Daniel") || v.name.includes("Ricardo") || v.name.toLowerCase().includes("male"))
+  );
       u.voice = maleVoice || voices[0];
 
       u.onstart = playAvatar;
       u.onend = stopAvatar;
 
       window.speechSynthesis.speak(u);
+      speakPortugueseMale(txt, playAvatar, stopAvatar);
     }
 
     function appendBotMessage(txt) {
@@ -268,11 +270,12 @@
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(last);
-        u.lang = 'en-US';
+        u.lang = 'pt-BR'; // Use "pt-PT" if you prefer European Portuguese
 
         const voices = window.speechSynthesis.getVoices();
         const maleVoice = voices.find(v =>
-          v.lang.startsWith('en') && /male|Matthew|David|John|Brian/i.test(v.name)
+          v.lang.startsWith('pt') &&
+          /Daniel|Ricardo|male|português/i.test(v.name)
         );
         u.voice = maleVoice || voices[0];
 
@@ -282,6 +285,7 @@
         window.speechSynthesis.speak(u);
       }
     });
+
 
     startChat();
   });
