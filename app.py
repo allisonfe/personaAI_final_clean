@@ -2,31 +2,38 @@ from flask import Flask, render_template, request, session, jsonify
 from flask_session import Session
 from openai import OpenAI
 from flask_cors import CORS
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
-from datetime import timedelta
 import redis
 import os
 
-# ─── LOAD ENV VARIABLES ─────────────────────────────────────────────────────────
-load_dotenv()  # Load .env in project root
+# ========== Load environment variables ==========
+load_dotenv()
 
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise RuntimeError("Variável de ambiente OPENAI_API_KEY ausente")
-
-# Instancia o cliente OpenAI
-client = OpenAI(api_key=api_key)
-
-redis_url = os.environ.get('REDIS_URL')
-
-r = redis.Redis.from_url(redis_url)
-r.set("foo", "bar")
-value = r.get("foo")
-print(value.decode())
-
+# ========== Init Flask app ==========
 app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=["https://preview--persona-path-unlocked.lovable.app/"])
+app.secret_key = os.getenv("SECRET_KEY")
 
+# ========== Init OpenAI ==========
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise RuntimeError("OPENAI_API_KEY is missing")
+client = OpenAI(api_key=api_key)
+
+# ========== Init Redis client ==========
+redis_url = os.getenv("REDIS_URL")
+r = redis.from_url(redis_url)
+
+# ========== Test Redis only when route is hit ==========
+@app.route("/test-redis")
+def test_redis():
+    try:
+        r.set("foo", "bar")
+        return f"Redis connected! Value: {r.get('foo')}"
+    except Exception as e:
+        return f"Redis error: {e}"
+    
 app.secret_key = os.getenv("SECRET_KEY")
 
 # ── CONFIGURAÇÃO DE SESSÃO ──────────────────────────────────────────────────────
