@@ -165,8 +165,8 @@
       if (muted || !speakEnabled || !('speechSynthesis' in window)) return;
 
       window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(txt);
-      utterance.lang = "pt-BR";
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "pt-BR";
 
       // Optional: choose male voice
       const voices = window.speechSynthesis.getVoices();
@@ -180,7 +180,6 @@
       u.onend = stopAvatar;
 
       window.speechSynthesis.speak(u);
-      speakPortugueseMale(txt, playAvatar, stopAvatar);
     }
 
     function appendBotMessage(txt) {
@@ -217,7 +216,7 @@
       if (!text) return;
       appendUserMessage(text);
       inp.value = '';
-      const res = await fetch('/chat', {
+      const res = await fetch('/api/chat', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -228,7 +227,7 @@
 
       if (report_ready) {
         setTimeout(async () => {
-          const r2 = await fetch('/chat', {
+          const r2 = await fetch('/api/chat', {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
